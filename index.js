@@ -75,11 +75,13 @@ const BOOKING_PASSWORD =
 // --------------------------------------------------
 
 app.get("/health", (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: "Server is awake and running",
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
+  const dbConnected = mongoose.connection.readyState === 1;
+
+  res.status(dbConnected ? 200 : 503).json({
+    success: dbConnected,
+    server: "running",
+    database: dbConnected ? "connected" : "disconnected",
+    readyState: mongoose.connection.readyState,
   });
 });
 
